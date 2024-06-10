@@ -1,0 +1,51 @@
+services:
+  oracle:
+    image: oracle/database:19.3.0-ee
+    ports:
+      - "1521:1521"
+    environment:
+      ORACLE_PWD: password
+      ORACLE_PDB: ORCLPDB1
+      ORACLE_SID: ORCLCDB
+      ORACLE_EDITION: enterprise
+      ENABLE_ARCHIVELOG: true
+    volumes:
+      - db-data:/opt/oracle/oradata
+      - ./schemas:/schemas
+
+
+  connect:
+    image: confluentinc/cp-server-connect:7.6.0
+    ports:
+      - "8083:8083"
+    environment:
+      CONNECT_GROUP_ID: "connect"
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.storage.StringConverter"
+      CONNECT_VALUE_CONVERTER: "io.confluent.connect.avro.AvroConverter"
+      CONNECT_CONFIG_STORAGE_TOPIC: "connect-configs"
+      CONNECT_OFFSET_STORAGE_TOPIC: "connect-offsets"
+      CONNECT_STATUS_STORAGE_TOPIC: "connect-status"
+      CONNECT_REST_ADVERTISED_HOST_NAME: "connect"
+      CONNECT_REPLICATION_FACTOR: 3
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 3
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 3
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 3
+    env_file:
+      - ccloud.env
+
+    command:
+      - bash
+      - -c
+      - |
+        echo "Installing Connector"
+        confluent-hub install --no-prompt confluentinc/kafka-connect-oracle-cdc:2.12.0
+        #
+        echo "Launching Kafka Connect worker"
+        /etc/confluent/docker/run &
+        #
+        sleep infinity
+
+
+
+volumes:
+  db-data:
