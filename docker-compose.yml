@@ -11,7 +11,7 @@ services:
       ENABLE_ARCHIVELOG: true
     volumes:
       - db-data:/opt/oracle/oradata
-      - ./schemas:/schemas
+      - ./sql:/sql
 
 
   connect:
@@ -39,6 +39,8 @@ services:
       - |
         echo "Installing Connector"
         confluent-hub install --no-prompt confluentinc/kafka-connect-oracle-cdc:2.12.0
+        confluent-hub install --no-prompt mongodb/kafka-connect-mongodb:1.13.0
+        confluent-hub install --no-prompt snowflakeinc/snowflake-kafka-connector:2.2.2
         #
         echo "Launching Kafka Connect worker"
         /etc/confluent/docker/run &

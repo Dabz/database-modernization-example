@@ -29,6 +29,7 @@ CONNECTOR_CONFIG=`cat << EOF
    "value.converter.basic.auth.credentials.source": "USER_INFO",
    "key.converter.basic.auth.user.info": "$CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO",
    "value.converter.basic.auth.user.info": "$CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO",
+   "emit.tombstone.on.delete": false,
    "redo.log.topic.name": "redo-log-topic",
    "topic.creation.groups": "redo",
    "topic.creation.redo.include": "redo-log-topic",
